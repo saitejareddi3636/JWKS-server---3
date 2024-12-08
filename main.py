@@ -9,20 +9,20 @@ from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from datetime import datetime, timedelta, timezone
 
-# Flask app setup
+
 app = Flask(__name__)
 
-# Initialize rate limiter explicitly
+
 limiter = Limiter(
     get_remote_address,
     app=app,
     default_limits=["5 per minute"]
 )
 
-# AES encryption key
+
 AES_KEY = os.environ.get("NOT_MY_KEY", b"secure_key_for_aes_32_bytes_padding")[:32]
 
-# Database path
+
 DB_PATH = "totally_not_my_privateKeys.db"
 
 def get_db_connection():
