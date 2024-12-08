@@ -1,0 +1,29 @@
+import sqlite3
+from base64 import b64encode
+from Crypto.Cipher import AES
+from Crypto.Util.Padding import pad
+import os
+
+# Define AES key (ensure this matches your main.py)
+AES_KEY = os.environ.get("NOT_MY_KEY", "default_secure_key_16")[:16].encode()
+
+# Function to encrypt the key
+def encrypt_key(data):
+    cipher = AES.new(AES_KEY, AES.MODE_CBC)
+    iv = cipher.iv
+    encrypted = cipher.encrypt(pad(data.encode(), AES.block_size))
+    return b64encode(iv + encrypted).decode()
+
+# Encrypt a test private key
+test_key = "test_private_key"
+encrypted_test_key = encrypt_key(test_key)
+
+# Insert into the database
+conn = sqlite3.connect("totally_not_my_privateKeys.db")
+cursor = conn.cursor()
+cursor.execute("INSERT INTO keys (kid, encrypted_key) VALUES (?, ?)", ("testKeyID", encrypted_test_key))
+conn.commit()
+conn.close()
+
+print("Test key added successfully.")
+
